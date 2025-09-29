@@ -1,0 +1,49 @@
+table_name: bu_commercial_retail_client_allocation_hunter
+schema: self_service_analytics
+domain: bu_commercial_retail
+schedule: 0 10 * * *
+start_date: '2025-09-29'
+owner: lucas.mmoura@picpay.com
+source: internal
+tags:
+  - client_allocation_hunter
+  - bu_commercial_client_allocation_hunter
+process:
+  type: databricks
+  notebook: bu_commercial_retail_client_allocation_hunter.py 
+  dependencies:
+    - self_service_analytics.bu_commercial_retail_lead_hunter_total
+    - consumers.sec_consumers_identifies
+    - commercial_retail.sales_performance_consumers
+
+description: Tabela que gera clientes que precisam ser encarteirados pelo hunter.
+primary_keys:
+- bu_commercial_retail_client_allocation_hunter_id
+
+columns_description:
+
+- column: bu_commercial_retail_client_allocation_hunter_id
+description: Coluna que contempla a chave primária da tabela, bu_commercial_retail_client_allocation_hunter_id.
+classification: public
+treatment: default
+confidentiality_level: internal
+
+- column: consumer_id
+description: Identificador do consumer, chave estrangeira para a tabela consumers.consumers.
+classification: personal
+treatment: tokenized
+confidentiality_level: confidential
+ref:
+  - 1-1 consumers.consumers.consumer_id
+
+- column: portfolio_description
+  description: id do hunter.
+  classification: public
+  treatment: default
+  confidentiality_level: internal
+
+- column: is_investment_portfolio
+  description: Boolean necessário para a Focus, True para assessores e Hunter, False para Gerentes. Para esse caso, sempre True.
+  classification: public
+  treatment: default
+  confidentiality_level: internal
